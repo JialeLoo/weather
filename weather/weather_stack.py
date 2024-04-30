@@ -3,9 +3,6 @@ from aws_cdk import (
     Duration,
     Stack,
     aws_iam as iam,
-    aws_sqs as sqs,
-    aws_sns as sns,
-    aws_sns_subscriptions as subs,
     aws_lambda as lambda_,
     aws_lambda_python_alpha as _alambda,
     aws_lambda_event_sources as  lambda_event_sources,
@@ -32,7 +29,6 @@ class WeatherStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_10,
             index='lambda_handler.py',
             handler='lambda_handler',
-            code=lambda_.Code.from_asset('lambda'),
             timeout=Duration.seconds(60),
             environment={
                 "S3_BUCKET_NAME": weather_bucket.bucket_name,
@@ -47,17 +43,17 @@ class WeatherStack(Stack):
         weather_bucket.grant_write(initiator)
         
         # Grant permissions to the CDK stack to make changes to EventBridge rules
-        initiator.add_to_role_policy(
-            statement=iam.PolicyStatement(
-                actions=[
-                    'events:PutRule',
-                    'events:PutTargets',
-                    'events:RemoveTargets',
-                    'events:DeleteRule'
-                ],
-                resources=['*']  # Adjust the resource ARN as needed
-            )
-        )
+        # initiator.add_to_role_policy(
+        #     statement=iam.PolicyStatement(
+        #         actions=[
+        #             'events:PutRule',
+        #             'events:PutTargets',
+        #             'events:RemoveTargets',
+        #             'events:DeleteRule'
+        #         ],
+        #         resources=['*']  # Adjust the resource ARN as needed
+        #     )
+        # )
 
 
         # Create an EventBridge rule to trigger Lambda hourly
